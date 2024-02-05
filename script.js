@@ -156,12 +156,28 @@ function resetGame() {
 }
 // ...
 
+function getGuessedColorsText() {
+    return guessedColorsForSharing.map(color => `RGB(${color.red}, ${color.green}, ${color.blue})`).join(', ');
+}
+
+function copyResultsToClipboard() {
+    try {
+        const resultsText = `Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})\n` +
+                            `Guessed Colors: ${getGuessedColorsText()}\n` +
+                            `Final Guesses Difference: ${calculateFinalDifference()}`;
+
+        // Rest of the function...
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+    }
+}
+
 function shareResults() {
     // Create modal content
     const modalContent = document.createElement('div');
     modalContent.innerHTML = `
-    <p>Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})</p>
-    <div id="target-color-display" style="width: 30px; height: 30px; background-color: rgb(${targetColor.red}, ${targetColor.green}, ${targetColor.blue});"></div>
+        <p>Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})</p>
+        <div id="target-color-display" style="width: 30px; height: 30px; background-color: rgb(${targetColor.red}, ${targetColor.green}, ${targetColor.blue});"></div>
         <div id="guessed-colors-container"></div>
         <p>Final Guesses Difference: ${calculateFinalDifference()}</p>
         <button id="copyToClipboardBtn">Copy to Clipboard</button>
@@ -194,9 +210,38 @@ function displayGuessedColorsForSharing(container) {
         guessedColorBox.style.backgroundColor = `rgb(${guessedColor.red}, ${guessedColor.green}, ${guessedColor.blue})`;
         container.appendChild(guessedColorBox);
     }
+    // Add event listener to close the modal when clicking outside
+    console.log("ADDING THE BODY LISTENER");
+    document.body.addEventListener('click', handleOutsideClick);
+    console.log("ADDED THE BODY LISTENER");
+
 }
 
-// ...
+function handleOutsideClick(event) {
+    console.log("FUNCTION GETS CALLED WHEN WE CLICK BODY");
+    const modal = document.querySelector('.modal-content');
+    const shareResultsBtn = document.getElementById('shareResultsBtn');
+
+    // Check if the clicked element is outside the modal and not the Share Results button
+    
+    if (!modal.contains(event.target) && event.target !== shareResultsBtn) {
+        console.log("CLOSING MODAL");
+        closeModal();
+        console.log("CLOSED MODAL");
+    }
+}
+
+// Function to close the modal
+function closeModal() {
+    const modal = document.querySelector('.modal-content');
+    modal.style.display = 'none';
+
+    // Remove the outside click event listener
+    document.body.removeEventListener('click', handleOutsideClick);
+
+    // Add any other logic you need to reset or close the modal
+}
+
 
 function createModal(content) {
     const modal = document.createElement('div');
@@ -209,4 +254,5 @@ function createModal(content) {
     modal.appendChild(modalContent);
 
     return modal;
+
 }

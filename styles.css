@@ -38,9 +38,7 @@
     background-color: inherit; /* Inherit background color from the attempt box */
 }
 #input-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    margin: 20px;
 }
 
 label {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>RGB Color Guessing Game</title>
+    <title>HueGuesser</title>
 </head>
 <body>
     <div class="container">
@@ -21,11 +21,11 @@
             <input type="number" id="blue" min="0" max="255">
             <button onclick="checkGuess()">Submit Guess</button>
         </div>
-<button onclick="shareResults()">Share your results</button>
+        <button id="shareResultsBtn" onclick="shareResults()">Share your results</button>
         <div id="guesses-container"></div>
         <p id="hint"></p>
         <div id="result"></div>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js"></script>s
 </body>
 </html>
