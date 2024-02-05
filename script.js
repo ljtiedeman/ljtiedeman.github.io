@@ -163,7 +163,7 @@ function getGuessedColorsText() {
 function copyResultsToClipboard() {
     const resultsText = `Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})\n` +
                         `Guessed Colors: ${getGuessedColorsText()}\n` +
-                        `Final Guesses Difference: ${calculateFinalDifference()}\n` + 
+                        `Final Guess Differences: ${calculateFinalDifference()}\n` + 
                         `Play HueGuesser at https://ljtiedeman.github.io/`
 
     navigator.clipboard.writeText(resultsText)
@@ -179,7 +179,7 @@ function shareResults() {
         <p>Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})</p>
         <div id="target-color-display" style="width: 30px; height: 30px; background-color: rgb(${targetColor.red}, ${targetColor.green}, ${targetColor.blue});"></div>
         <div id="guessed-colors-container"></div>
-        <p>Final Guesses Difference: ${calculateFinalDifference()}</p>
+        <p>Final Guess Differences: ${calculateFinalDifference()}</p>
         <button id="copyToClipboardBtn">Copy to Clipboard</button>
     `;
 
