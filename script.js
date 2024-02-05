@@ -161,15 +161,15 @@ function getGuessedColorsText() {
 }
 
 function copyResultsToClipboard() {
-    try {
-        const resultsText = `Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})\n` +
-                            `Guessed Colors: ${getGuessedColorsText()}\n` +
-                            `Final Guesses Difference: ${calculateFinalDifference()}`;
+    const resultsText = `Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})\n` +
+                        `Guessed Colors: ${getGuessedColorsText()}\n` +
+                        `Final Guesses Difference: ${calculateFinalDifference()}\n` + 
+                        `Play HueGuesser at https://ljtiedeman.github.io/`
 
-        // Rest of the function...
-    } catch (error) {
-        console.error('Error copying to clipboard:', error);
-    }
+    navigator.clipboard.writeText(resultsText)
+        .catch((error) => {
+            console.error('Unable to copy to clipboard', error);
+        });
 }
 
 function shareResults() {
