@@ -45,6 +45,45 @@ function checkGuess() {
     const greenGuess = parseInt(document.getElementById('green').value);
     const blueGuess = parseInt(document.getElementById('blue').value);
 
+    // Check if any of the RGB values match
+    var red_colored = false;
+    var green_colored = false;
+    var blue_colored = false;
+    if (redGuess === targetColor.red) {
+        red_colored = true;
+    }
+
+    if (greenGuess === targetColor.green) {
+        green_colored = true;
+    }
+
+    if (blueGuess === targetColor.blue) {
+        blue_colored = true;
+    }
+
+    // add guesses below submit
+    const guessContent = document.querySelector('#prev-guesses');
+    var guess_string = "<div>";
+    if (red_colored) {
+        guess_string+="<div style='display:inline-block;color:red'>R:&nbsp" + redGuess + "</div>&nbsp;,&nbsp;";
+    } else {
+        guess_string+="<div style='display:inline-block;color:black'>R:&nbsp" + redGuess + "</div>&nbsp;,&nbsp;";
+    }
+    if (green_colored) {
+        guess_string+="<div style='display:inline-block;color:green'>G:&nbsp" + greenGuess + "</div>&nbsp;,&nbsp;";
+    } else {
+        guess_string+="<div style='display:inline-block;color:black'>G:&nbsp" + greenGuess + "</div>&nbsp;,&nbsp;";
+    }
+    if (blue_colored) {
+        guess_string+="<div style='display:inline-block;color:blue'>B:&nbsp" + blueGuess + "</div>";
+    } else {
+        guess_string+="<div style='display:inline-block;color:black'>B:&nbsp" + blueGuess + "</div>";
+    }
+    guess_string+="</div><br>";
+    guess_string+= guessContent.innerHTML;
+
+    guessContent.innerHTML = guess_string;
+
     if (isNaN(redGuess) || isNaN(greenGuess) || isNaN(blueGuess)) {
         alert('Please enter valid numbers.');
         return;
@@ -57,8 +96,9 @@ function checkGuess() {
 
     attempts--;
 
-    if (attempts === 0) {
-        endGame();
+    const winCondition = (redGuess === targetColor.red) && (greenGuess === targetColor.green) && (blueGuess === targetColor.blue);
+    if (attempts === 0 || winCondition) {
+        endGame(winCondition);
     }
 }
 
@@ -95,10 +135,14 @@ function displayGuessedColor(redGuess, greenGuess, blueGuess) {
 
 
 
-function endGame() {
+function endGame(winCondition) {
     const resultDisplay = document.getElementById('result');
-    resultDisplay.innerHTML = `<p>Game over! The correct color was RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue}).</p>`;
-    
+    if (winCondition) {
+        resultDisplay.innerHTML = `<p>Congratulations! You guessed correctly!</p>`;
+    } else {
+        resultDisplay.innerHTML = `<p>Game over! The correct color was RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue}).</p>`;
+    }
+    // shareResults()
     // Additional logic or UI updates after the game ends can be added here.
 }
 
