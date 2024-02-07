@@ -142,6 +142,27 @@ function endGame(winCondition) {
     } else {
         resultDisplay.innerHTML = `<p>Game over! The correct color was RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue}).</p>`;
     }
+
+    // Disable input fields and the submit button
+    document.getElementById('red').disabled = true;
+    document.getElementById('green').disabled = true;
+    document.getElementById('blue').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+
+    // Create a "Play Again" button
+    const playAgainButton = document.createElement('button');
+    playAgainButton.textContent = 'Play Again';
+
+    // Add an event listener to the "Play Again" button to refresh the page when clicked
+    playAgainButton.addEventListener('click', function() {
+        location.reload(); // Reload the page
+    });
+
+    // Replace the "Submit Guess" button with the "Play Again" button
+    const submitButtonContainer = document.getElementById('submit-btn-container');
+    submitButtonContainer.innerHTML = ''; // Clear the container first
+    submitButtonContainer.appendChild(playAgainButton);
+
     // shareResults()
     // Additional logic or UI updates after the game ends can be added here.
 }
@@ -238,6 +259,7 @@ function shareResults() {
     // Set the display property to 'block' to make the modal visible
     modal.style.display = 'block';
 
+
     // Add event listener to the "Copy to Clipboard" button
     const copyToClipboardBtn = modalContent.querySelector('#copyToClipboardBtn');
     copyToClipboardBtn.addEventListener('click', copyResultsToClipboard);
@@ -254,36 +276,27 @@ function displayGuessedColorsForSharing(container) {
         guessedColorBox.style.backgroundColor = `rgb(${guessedColor.red}, ${guessedColor.green}, ${guessedColor.blue})`;
         container.appendChild(guessedColorBox);
     }
-    // Add event listener to close the modal when clicking outside
-    console.log("ADDING THE BODY LISTENER");
-    document.body.addEventListener('click', handleOutsideClick);
-    console.log("ADDED THE BODY LISTENER");
 
 }
 
 function handleOutsideClick(event) {
-    console.log("FUNCTION GETS CALLED WHEN WE CLICK BODY");
     const modal = document.querySelector('.modal-content');
     const shareResultsBtn = document.getElementById('shareResultsBtn');
 
     // Check if the clicked element is outside the modal and not the Share Results button
     
     if (!modal.contains(event.target) && event.target !== shareResultsBtn) {
-        console.log("CLOSING MODAL");
         closeModal();
-        console.log("CLOSED MODAL");
     }
 }
 
 // Function to close the modal
 function closeModal() {
-    const modal = document.querySelector('.modal-content');
-    modal.style.display = 'none';
+    const modal = document.querySelector('.modal');
+    modal.remove();
 
-    // Remove the outside click event listener
     document.body.removeEventListener('click', handleOutsideClick);
 
-    // Add any other logic you need to reset or close the modal
 }
 
 
@@ -296,6 +309,9 @@ function createModal(content) {
     modalContent.appendChild(content);
 
     modal.appendChild(modalContent);
+
+    // Add event listener to close the modal when clicking outside
+    document.body.addEventListener('click', handleOutsideClick);
 
     return modal;
 

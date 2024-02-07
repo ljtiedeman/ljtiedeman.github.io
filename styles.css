@@ -5,6 +5,10 @@
     text-align: left;
 }
 
+#submit-btn-container {
+    display: inline;
+}
+
 .container {
     text-align: center;
     background-color: #fff;

@@ -28,7 +28,9 @@
             <input type="number" id="green" min="0" max="255">
             <label for="blue">Blue:</label>
             <input type="number" id="blue" min="0" max="255">
-            <button onclick="checkGuess()">Submit Guess</button>
+            <div id="submit-btn-container">
+                <button id="submit-btn" onclick="checkGuess()">Submit Guess</button>
+            </div>
         </div>
         <h4>Previous Guesses:</h4>
         <div id="prev-guesses">
