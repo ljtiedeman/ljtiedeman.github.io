@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>HueGuesser</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HueGuesser 🎨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>HueGuesser</h1>
-        <div id="instructions">
-            <h2>🎯 Goal: Guess the RGB Color!</h2>
-            <ul>
-                <li>Try to guess the <strong>Red, Green, and Blue (RGB)</strong> values of the color shown below.</li>
-                <li>You have <strong>5 attempts</strong>.</li>
-                <li>Each RGB value is a number between <strong>0 and 255</strong>.</li>
-                <li>If you guess a value correctly, the <strong>text color</strong> will change in the "Previous Guesses" section.</li>
-                <li>After each guess, you'll get a <strong>hint</strong>: the total difference between your guess and the correct RGB values.
-                    <br>For example, if you're 10 off for Red, 15 for Green, and 5 for Blue, your hint will be <strong>30</strong>.
-                </li>
-            </ul>
-            <p><strong>Good luck and happy guessing! 🎨</strong></p>
-        </div>
+  <div class="container">
+    <h1>HueGuesser 🎨</h1>
 
-        <div id="color-display"></div>
-        <div id="attempts-container"></div>
-
-        <div id="input-container">
-            <label for="red">Red:</label>
-            <input type="number" id="red" min="0" max="255">
-            <label for="green">Green:</label>
-            <input type="number" id="green" min="0" max="255">
-            <label for="blue">Blue:</label>
-            <input type="number" id="blue" min="0" max="255">
-            <div id="submit-btn-container">
-                <button id="submit-btn" onclick="checkGuess()">Submit Guess</button>
-            </div>
-        </div>
-
-        <h4>Previous Guesses:</h4>
-        <div id="prev-guesses"></div>
-
-        <button id="shareResultsBtn" onclick="shareResults()">Share your results</button>
-        <div id="guesses-container"></div>
-        <p id="hint"></p>
-        <div id="result"></div>
+    <div id="instructions" class="callout">
+      <h2>How to Play</h2>
+      <p>Try to guess the <strong>target color</strong> by selecting one shade each of Red, Green, and Blue from the rows below.</p>
+      <ul>
+        <li>The target color is shown at the top and stays visible throughout the game.</li>
+        <li>Each color row has 10 shades, from lightest (left) to darkest (right), packed tightly with no gaps.</li>
+        <li>Click one box per row to select that shade. Selected boxes get a black border.</li>
+        <li>Click "Submit Guess" to combine your selected shades and see your guess color.</li>
+        <li>If you guess a color correctly, that color locks and you can’t select a different shade for it anymore.</li>
+        <li>You have <strong>5 attempts</strong> to find the exact RGB combination.</li>
+        <li>Previous guesses show the color you made and the selected shade numbers for Red, Green, and Blue.</li>
+        <li>If you win, confetti in your target color celebrates your success! 🎉</li>
+        <li>If you run out of attempts, the correct combination is revealed and you can play again.</li>
+      </ul>
+      <p><strong>Good luck and have fun!</strong></p>
     </div>
-    <script src="script.js"></script>
+
+    <div id="target-color-label">Target Color</div>
+    <div id="target-color" class="color-box"></div>
+
+    <div id="selectors-container">
+      <div class="color-row" id="red-row">
+        <div class="color-label">Red</div>
+      </div>
+      <div class="color-row" id="green-row">
+        <div class="color-label">Green</div>
+      </div>
+      <div class="color-row" id="blue-row">
+        <div class="color-label">Blue</div>
+      </div>
+    </div>
+
+    <div id="submit-btn-container">
+      <button id="submit-btn" disabled>Submit Guess</button>
+    </div>
+
+    <h3>Previous Guesses</h3>
+    <div id="previous-guesses"></div>
+
+    <div id="guess-result"></div>
+    <button id="play-again-btn" style="display:none;">Play Again</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
+
