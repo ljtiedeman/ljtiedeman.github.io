@@ -9,18 +9,23 @@
 <body>
     <div class="container">
         <h1>HueGuesser</h1>
-        <p id="instructions">
-             <div>
-                <div>The goal of the game is to accurately guess the RGB values of the color below.</div>
-                <div>You have 5 attempts to successfully guess the combination.</div>
-                <div>All RGB values fall between 0 and 255.</div>
-                <div>The hint at the bottom is the sum of the differences for all three numbers. For example, if you are 10 off from Red and 15 off from Green, the hint would be 25.</div>
-                <div>If you guess a value correctly, the text color will change in the 'Previous Guesses' section.</div>
-                <div>Good luck!</div>
-            </div>
-        </p>
+        <div id="instructions">
+            <h2>🎯 Goal: Guess the RGB Color!</h2>
+            <ul>
+                <li>Try to guess the <strong>Red, Green, and Blue (RGB)</strong> values of the color shown below.</li>
+                <li>You have <strong>5 attempts</strong>.</li>
+                <li>Each RGB value is a number between <strong>0 and 255</strong>.</li>
+                <li>If you guess a value correctly, the <strong>text color</strong> will change in the "Previous Guesses" section.</li>
+                <li>After each guess, you'll get a <strong>hint</strong>: the total difference between your guess and the correct RGB values.
+                    <br>For example, if you're 10 off for Red, 15 for Green, and 5 for Blue, your hint will be <strong>30</strong>.
+                </li>
+            </ul>
+            <p><strong>Good luck and happy guessing! 🎨</strong></p>
+        </div>
+
         <div id="color-display"></div>
         <div id="attempts-container"></div>
+
         <div id="input-container">
             <label for="red">Red:</label>
             <input type="number" id="red" min="0" max="255">
@@ -32,9 +37,10 @@
                 <button id="submit-btn" onclick="checkGuess()">Submit Guess</button>
             </div>
         </div>
+
         <h4>Previous Guesses:</h4>
-        <div id="prev-guesses">
-        </div>
+        <div id="prev-guesses"></div>
+
         <button id="shareResultsBtn" onclick="shareResults()">Share your results</button>
         <div id="guesses-container"></div>
         <p id="hint"></p>
