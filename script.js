@@ -1,318 +1,256 @@
-document.addEventListener('DOMContentLoaded', startGame);
+// Constants
+const SHADES_COUNT = 10;
+const MAX_ATTEMPTS = 5;
+const COLORS = ['red', 'green', 'blue'];
 
-let targetColor;
-let attempts = 5;
+// State variables
+let targetColor = { r: 0, g: 0, b: 0 };
+let selectedShades = { red: null, green: null, blue: null };
+let lockedColors = { red: false, green: false, blue: false };
+let attempts = 0;
+let gameOver = false;
 
-let guessedColorsForSharing = [];
+// DOM elements
+const targetColorDiv = document.getElementById('target-color');
+const submitBtn = document.getElementById('submit-btn');
+const playAgainBtn = document.getElementById('play-again-btn');
+const previousGuessesDiv = document.getElementById('previous-guesses');
+const guessResultDiv = document.getElementById('guess-result');
 
-function startGame() {
-    generateRandomColor();
-    displayColor();
-    displayAttempts();
-    guessedColorsForSharing = []; // Reset the array at the start of each game
+// Utility: Generate shades from lightest (index 0) to darkest (index 9)
+function generateShades(colorName) {
+  const shades = [];
+  for (let i = 0; i < SHADES_COUNT; i++) {
+    const intensity = Math.round((i * 255) / (SHADES_COUNT - 1));
+    let r = 0, g = 0, b = 0;
+    if (colorName === 'red') r = intensity;
+    else if (colorName === 'green') g = intensity;
+    else if (colorName === 'blue') b = intensity;
+    shades.push(`rgb(${r},${g},${b})`);
+  }
+  return shades;
 }
 
-function generateRandomColor() {
-    targetColor = {
-        red: getRandomValue(),
-        green: getRandomValue(),
-        blue: getRandomValue()
-    };
-}
+// Initialize selectors rows
+function createColorSelectors() {
+  COLORS.forEach(color => {
+    const rowDiv = document.getElementById(color + '-row');
+    const shades = generateShades(color);
 
-function getRandomValue() {
-    return Math.floor(Math.random() * 256);
-}
-
-function displayColor() {
-    const colorDisplay = document.getElementById('color-display');
-    colorDisplay.style.backgroundColor = `rgb(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})`;
-}
-
-function displayAttempts() {
-    const attemptsContainer = document.getElementById('attempts-container');
-    attemptsContainer.innerHTML = "";
-
-    for (let i = 0; i < attempts; i++) {
-        const attemptBox = document.createElement('div');
-        attemptBox.className = 'attempt-box';
-        attemptsContainer.appendChild(attemptBox);
+    // Clear existing children (except label)
+    while (rowDiv.children.length > 1) {
+      rowDiv.removeChild(rowDiv.lastChild);
     }
+
+    shades.forEach((shade, idx) => {
+      const box = document.createElement('div');
+      box.classList.add('color-box-shade');
+      box.style.backgroundColor = shade;
+      box.dataset.color = color;
+      box.dataset.shadeIndex = idx;
+      box.title = `${color.charAt(0).toUpperCase() + color.slice(1)} shade ${idx + 1}`;
+
+      box.addEventListener('click', () => {
+        if (gameOver) return;
+        if (lockedColors[color]) return; // locked, no change allowed
+
+        // Select this shade and update UI
+        selectedShades[color] = idx;
+        updateSelectorsUI();
+        updateSubmitButton();
+      });
+
+      rowDiv.appendChild(box);
+    });
+  });
 }
 
+// Update selectors UI: border for selected, opacity for locked
+function updateSelectorsUI() {
+  COLORS.forEach(color => {
+    const rowDiv = document.getElementById(color + '-row');
+    const boxes = rowDiv.querySelectorAll('.color-box-shade');
+    boxes.forEach(box => {
+      box.classList.remove('selected');
+      box.classList.remove('locked');
+
+      const shadeIdx = parseInt(box.dataset.shadeIndex);
+
+      if (lockedColors[color]) {
+        if (shadeIdx === selectedShades[color]) {
+          box.classList.add('selected');
+          box.classList.add('locked');
+        } else {
+          box.classList.add('locked');
+        }
+      } else if (shadeIdx === selectedShades[color]) {
+        box.classList.add('selected');
+      }
+    });
+  });
+}
+
+// Enable submit button only if all colors selected and game not over
+function updateSubmitButton() {
+  const allSelected = COLORS.every(color => selectedShades[color] !== null);
+  submitBtn.disabled = !allSelected || gameOver;
+}
+
+// Convert shade index (0-9) to RGB value (0-255)
+function shadeIndexToValue(idx) {
+  return Math.round((idx * 255) / (SHADES_COUNT - 1));
+}
+
+// Convert current selected shades to RGB object
+function getSelectedRgb() {
+  return {
+    r: shadeIndexToValue(selectedShades.red),
+    g: shadeIndexToValue(selectedShades.green),
+    b: shadeIndexToValue(selectedShades.blue)
+  };
+}
+
+// Update the target color display
+function updateTargetColorDisplay() {
+  targetColorDiv.style.backgroundColor = `rgb(${targetColor.r},${targetColor.g},${targetColor.b})`;
+}
+
+// Check guess against target
 function checkGuess() {
-    const redGuess = parseInt(document.getElementById('red').value);
-    const greenGuess = parseInt(document.getElementById('green').value);
-    const blueGuess = parseInt(document.getElementById('blue').value);
+  if (gameOver) return;
 
-    // Check if any of the RGB values match
-    var red_colored = false;
-    var green_colored = false;
-    var blue_colored = false;
-    if (redGuess === targetColor.red) {
-        red_colored = true;
+  attempts++;
+  const guessRgb = getSelectedRgb();
+
+  // Show guess in previous guesses
+  addGuessEntry(guessRgb);
+
+  // Check each color component
+  let won = true;
+  COLORS.forEach(color => {
+    const c = color.charAt(0); // 'r', 'g', or 'b'
+    if (guessRgb[c] === targetColor[c] && !lockedColors[color]) {
+      // Lock this color in place if correct and not already locked
+      lockedColors[color] = true;
     }
-
-    if (greenGuess === targetColor.green) {
-        green_colored = true;
+    if (guessRgb[c] !== targetColor[c]) {
+      won = false;
     }
+  });
 
-    if (blueGuess === targetColor.blue) {
-        blue_colored = true;
-    }
+  updateSelectorsUI();
 
-    // add guesses below submit
-    const guessContent = document.querySelector('#prev-guesses');
-    var guess_string = "<div>";
-    if (red_colored) {
-        guess_string+="<div style='display:inline-block;color:red'>R:&nbsp" + redGuess + "</div>&nbsp;,&nbsp;";
-    } else {
-        guess_string+="<div style='display:inline-block;color:black'>R:&nbsp" + redGuess + "</div>&nbsp;,&nbsp;";
-    }
-    if (green_colored) {
-        guess_string+="<div style='display:inline-block;color:green'>G:&nbsp" + greenGuess + "</div>&nbsp;,&nbsp;";
-    } else {
-        guess_string+="<div style='display:inline-block;color:black'>G:&nbsp" + greenGuess + "</div>&nbsp;,&nbsp;";
-    }
-    if (blue_colored) {
-        guess_string+="<div style='display:inline-block;color:blue'>B:&nbsp" + blueGuess + "</div>";
-    } else {
-        guess_string+="<div style='display:inline-block;color:black'>B:&nbsp" + blueGuess + "</div>";
-    }
-    guess_string+="</div><br>";
-    guess_string+= guessContent.innerHTML;
-
-    guessContent.innerHTML = guess_string;
-
-    if (isNaN(redGuess) || isNaN(greenGuess) || isNaN(blueGuess)) {
-        alert('Please enter valid numbers.');
-        return;
-    }
-
-    const hint = calculateHint(redGuess, greenGuess, blueGuess);
-    displayHint(hint);
-
-    displayGuessedColor(redGuess, greenGuess, blueGuess);
-
-    attempts--;
-
-    const winCondition = (redGuess === targetColor.red) && (greenGuess === targetColor.green) && (blueGuess === targetColor.blue);
-    if (attempts === 0 || winCondition) {
-        endGame(winCondition);
-    }
+  if (won) {
+    guessResultDiv.textContent = `🎉 You Win! The correct RGB combination is (${targetColor.r}, ${targetColor.g}, ${targetColor.b})`;
+    gameOver = true;
+    playAgainBtn.style.display = 'inline-block';
+    submitBtn.disabled = true;
+    launchConfetti(targetColor);
+  } else if (attempts >= MAX_ATTEMPTS) {
+    guessResultDiv.textContent = `❌ Out of guesses! The correct RGB combination was (${targetColor.r}, ${targetColor.g}, ${targetColor.b}).`;
+    gameOver = true;
+    playAgainBtn.style.display = 'inline-block';
+    submitBtn.disabled = true;
+  } else {
+    guessResultDiv.textContent = `Attempts left: ${MAX_ATTEMPTS - attempts}`;
+    submitBtn.disabled = true; // prevent re-submitting same guess without change
+  }
 }
 
-function calculateHint(redGuess, greenGuess, blueGuess) {
-    const hintValue = Math.abs(targetColor.red - redGuess) +
-                      Math.abs(targetColor.green - greenGuess) +
-                      Math.abs(targetColor.blue - blueGuess);
+// Add guess to previous guesses display
+function addGuessEntry(rgb) {
+  const entryDiv = document.createElement('div');
+  entryDiv.classList.add('guess-entry');
 
-    return hintValue;
+  const colorBox = document.createElement('div');
+  colorBox.classList.add('guess-color-box');
+  colorBox.style.backgroundColor = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+  entryDiv.appendChild(colorBox);
+
+  // Show selected shade numbers (1-based) for each color
+  const shadeInfo = document.createElement('div');
+  shadeInfo.classList.add('shade-numbers');
+  shadeInfo.textContent = `R: ${selectedShades.red + 1}, G: ${selectedShades.green + 1}, B: ${selectedShades.blue + 1}`;
+  entryDiv.appendChild(shadeInfo);
+
+  previousGuessesDiv.appendChild(entryDiv);
 }
 
-function displayHint(hint) {
-    const hintDisplay = document.getElementById('hint');
-    hintDisplay.textContent = `Hint: ${hint}`;
+// Reset game to initial state
+function resetGame() {
+  attempts = 0;
+  gameOver = false;
+  lockedColors = { red: false, green: false, blue: false };
+  selectedShades = { red: null, green: null, blue: null };
+  previousGuessesDiv.innerHTML = '';
+  guessResultDiv.textContent = '';
+  playAgainBtn.style.display = 'none';
+  submitBtn.disabled = true;
+
+  // Pick random target color from allowed combinations
+  targetColor = {
+    r: shadeIndexToValue(randomInt(0, SHADES_COUNT - 1)),
+    g: shadeIndexToValue(randomInt(0, SHADES_COUNT - 1)),
+    b: shadeIndexToValue(randomInt(0, SHADES_COUNT - 1)),
+  };
+
+  updateTargetColorDisplay();
+  updateSelectorsUI();
+  updateSubmitButton();
 }
 
-// ...
-
-function displayGuessedColor(redGuess, greenGuess, blueGuess) {
-    const attemptsContainer = document.getElementById('attempts-container');
-    const attemptBoxes = attemptsContainer.getElementsByClassName('attempt-box');
-
-    const guessedColorBox = document.createElement('div');
-    guessedColorBox.className = 'guessed-color-box';
-    guessedColorBox.style.backgroundColor = `rgb(${redGuess}, ${greenGuess}, ${blueGuess})`;
-
-    attemptBoxes[5 - attempts].appendChild(guessedColorBox);  // Adjusted index for proper placement
-
-    guessedColorsForSharing.push({ red: redGuess, green: greenGuess, blue: blueGuess });
+// Utility random int inclusive
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Confetti using Canvas Confetti library
+function launchConfetti(color) {
+  // Use the CDN for canvas-confetti
+  if (typeof confetti === 'undefined') {
+    // Load script and then launch confetti
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    script.onload = () => {
+      doConfetti(color);
+    };
+    document.body.appendChild(script);
+  } else {
+    doConfetti(color);
+  }
+}
 
-// ...
+function doConfetti(color) {
+  const rgb = `rgb(${color.r},${color.g},${color.b})`;
+  const duration = 3000;
+  const end = Date.now() + duration;
 
-
-
-function endGame(winCondition) {
-    const resultDisplay = document.getElementById('result');
-    if (winCondition) {
-        resultDisplay.innerHTML = `<p>Congratulations! You guessed correctly!</p>`;
-    } else {
-        resultDisplay.innerHTML = `<p>Game over! The correct color was RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue}).</p>`;
-    }
-
-    // Disable input fields and the submit button
-    document.getElementById('red').disabled = true;
-    document.getElementById('green').disabled = true;
-    document.getElementById('blue').disabled = true;
-    document.getElementById('submit-btn').disabled = true;
-
-    // Create a "Play Again" button
-    const playAgainButton = document.createElement('button');
-    playAgainButton.textContent = 'Play Again';
-
-    // Add an event listener to the "Play Again" button to refresh the page when clicked
-    playAgainButton.addEventListener('click', function() {
-        location.reload(); // Reload the page
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+      colors: [rgb],
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+      colors: [rgb],
     });
 
-    // Replace the "Submit Guess" button with the "Play Again" button
-    const submitButtonContainer = document.getElementById('submit-btn-container');
-    submitButtonContainer.innerHTML = ''; // Clear the container first
-    submitButtonContainer.appendChild(playAgainButton);
-
-    // shareResults()
-    // Additional logic or UI updates after the game ends can be added here.
-}
-
-function getRGBValuesFromColorString(colorString) {
-    // Extract RGB values from the "rgb(r, g, b)" format
-    const rgbValues = colorString.match(/\d+/g);
-    return {
-        red: parseInt(rgbValues[0]),
-        green: parseInt(rgbValues[1]),
-        blue: parseInt(rgbValues[2])
-    };
-}
-
-function calculateFinalDifference() {
-    const lastGuessedColor = guessedColorsForSharing[guessedColorsForSharing.length - 1];
-
-    if (!lastGuessedColor) {
-        return 'No guesses yet';
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
     }
-
-    const redDifference = Math.abs(targetColor.red - lastGuessedColor.red);
-    const greenDifference = Math.abs(targetColor.green - lastGuessedColor.green);
-    const blueDifference = Math.abs(targetColor.blue - lastGuessedColor.blue);
-
-    return `Red: ${redDifference}, Green: ${greenDifference}, Blue: ${blueDifference}`;
+  })();
 }
 
-function displayGuessedColorsForSharing(container) {
-    const heading = document.createElement('p');
-    heading.textContent = 'Guessed Colors (Share your results):';
-    container.appendChild(heading);
+// Event listeners
+submitBtn.addEventListener('click', checkGuess);
+playAgainBtn.addEventListener('click', resetGame);
 
-    for (const guessedColor of guessedColorsForSharing) {
-        const guessedColorBox = document.createElement('div');
-        guessedColorBox.className = 'guessed-color-box';
-        guessedColorBox.style.backgroundColor = `rgb(${guessedColor.red}, ${guessedColor.green}, ${guessedColor.blue})`;
-        container.appendChild(guessedColorBox);
-    }
-}
-
-
-function resetGame() {
-    attempts = 5;
-    generateRandomColor();
-    displayColor();
-    displayAttempts();
-    const hintDisplay = document.getElementById('hint');
-    hintDisplay.textContent = '';
-    
-    const resultDisplay = document.getElementById('result');
-    resultDisplay.innerHTML = '';
-
-    const guessesContainer = document.getElementById('guesses-container');
-    guessesContainer.innerHTML = '';
-}
-// ...
-
-function getGuessedColorsText() {
-    return guessedColorsForSharing.map(color => `RGB(${color.red}, ${color.green}, ${color.blue})`).join(', ');
-}
-
-function copyResultsToClipboard() {
-    const resultsText = `Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})\n` +
-                        `Guessed Colors: ${getGuessedColorsText()}\n` +
-                        `Final Guess Differences: ${calculateFinalDifference()}\n` + 
-                        `Play HueGuesser at https://ljtiedeman.github.io/`
-
-    navigator.clipboard.writeText(resultsText)
-        .catch((error) => {
-            console.error('Unable to copy to clipboard', error);
-        });
-}
-
-function shareResults() {
-    // Create modal content
-    const modalContent = document.createElement('div');
-    modalContent.innerHTML = `
-        <p>Target Color: RGB(${targetColor.red}, ${targetColor.green}, ${targetColor.blue})</p>
-        <div id="target-color-display" style="width: 30px; height: 30px; background-color: rgb(${targetColor.red}, ${targetColor.green}, ${targetColor.blue});"></div>
-        <div id="guessed-colors-container"></div>
-        <p>Final Guess Differences: ${calculateFinalDifference()}</p>
-        <button id="copyToClipboardBtn">Copy to Clipboard</button>
-    `;
-
-    // Display guessed colors in the modal
-    const guessedColorsContainer = modalContent.querySelector('#guessed-colors-container');
-    displayGuessedColorsForSharing(guessedColorsContainer);
-
-    // Create and append the modal to the body
-    const modal = createModal(modalContent);
-    document.body.appendChild(modal);
-
-    // Set the display property to 'block' to make the modal visible
-    modal.style.display = 'block';
-
-
-    // Add event listener to the "Copy to Clipboard" button
-    const copyToClipboardBtn = modalContent.querySelector('#copyToClipboardBtn');
-    copyToClipboardBtn.addEventListener('click', copyResultsToClipboard);
-}
-
-function displayGuessedColorsForSharing(container) {
-    const heading = document.createElement('p');
-    heading.textContent = 'Guessed Colors:';
-    container.appendChild(heading);
-
-    for (const guessedColor of guessedColorsForSharing) {
-        const guessedColorBox = document.createElement('div');
-        guessedColorBox.className = 'guessed-color-box-sharing';
-        guessedColorBox.style.backgroundColor = `rgb(${guessedColor.red}, ${guessedColor.green}, ${guessedColor.blue})`;
-        container.appendChild(guessedColorBox);
-    }
-
-}
-
-function handleOutsideClick(event) {
-    const modal = document.querySelector('.modal-content');
-    const shareResultsBtn = document.getElementById('shareResultsBtn');
-
-    // Check if the clicked element is outside the modal and not the Share Results button
-    
-    if (!modal.contains(event.target) && event.target !== shareResultsBtn) {
-        closeModal();
-    }
-}
-
-// Function to close the modal
-function closeModal() {
-    const modal = document.querySelector('.modal');
-    modal.remove();
-
-    document.body.removeEventListener('click', handleOutsideClick);
-
-}
-
-
-function createModal(content) {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    modalContent.appendChild(content);
-
-    modal.appendChild(modalContent);
-
-    // Add event listener to close the modal when clicking outside
-    document.body.addEventListener('click', handleOutsideClick);
-
-    return modal;
-
-}
+// Initialize game on page load
+createColorSelectors();
+resetGame();
