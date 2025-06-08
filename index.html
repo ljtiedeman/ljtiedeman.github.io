@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HueGuesser 🎨</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto&display=swap" rel="stylesheet" />
+  <title>HueGuesser</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -12,50 +11,41 @@
     <h1>HueGuesser 🎨</h1>
 
     <div id="instructions" class="callout">
-      <h2>How to Play</h2>
-      <p>Try to guess the <strong>target color</strong> by selecting one shade each of Red, Green, and Blue from the rows below.</p>
-      <ul>
-        <li>The target color is shown at the top and stays visible throughout the game.</li>
-        <li>Each color row has 10 shades, from lightest (left) to darkest (right), packed tightly with no gaps.</li>
-        <li>Click one box per row to select that shade. Selected boxes get a black border.</li>
-        <li>Click "Submit Guess" to combine your selected shades and see your guess color.</li>
-        <li>If you guess a color correctly, that color locks and you can’t select a different shade for it anymore.</li>
-        <li>You have <strong>5 attempts</strong> to find the exact RGB combination.</li>
-        <li>Previous guesses show the color you made and the selected shade numbers for Red, Green, and Blue.</li>
-        <li>If you win, confetti in your target color celebrates your success! 🎉</li>
-        <li>If you run out of attempts, the correct combination is revealed and you can play again.</li>
-      </ul>
-      <p><strong>Good luck and have fun!</strong></p>
+      <strong>How to Play:</strong>
+      <p>
+        Match the target color by selecting one of 10 shades (1–10) for each Red, Green, and Blue.<br />
+        After each guess, any correct colors will be locked in with a check mark.<br />
+        You have <strong>5 guesses</strong> to find the exact combination.<br />
+        Select shades for all three colors before submitting.
+      </p>
     </div>
 
-    <div id="target-color-label">Target Color</div>
-    <div id="target-color" class="color-box"></div>
+    <div id="target-container">
+      <h3>Target Color</h3>
+      <div id="target-color"></div>
+    </div>
 
-    <div id="selectors-container">
-      <div class="color-row" id="red-row">
-        <div class="color-label">Red</div>
-      </div>
-      <div class="color-row" id="green-row">
-        <div class="color-label">Green</div>
-      </div>
-      <div class="color-row" id="blue-row">
-        <div class="color-label">Blue</div>
-      </div>
+    <div class="color-selector-group" id="red-selector">
+      <h4>Red</h4>
+    </div>
+    <div class="color-selector-group" id="green-selector">
+      <h4>Green</h4>
+    </div>
+    <div class="color-selector-group" id="blue-selector">
+      <h4>Blue</h4>
     </div>
 
     <div id="submit-btn-container">
-      <button id="submit-btn" disabled>Submit Guess</button>
+      <button id="submit-btn" onclick="checkGuess()">Submit Guess</button>
     </div>
 
-    <h3>Previous Guesses</h3>
-    <div id="previous-guesses"></div>
+    <h4>Previous Guesses:</h4>
+    <div id="prev-guesses"></div>
 
-    <div id="guess-result"></div>
-    <button id="play-again-btn" style="display:none;">Play Again</button>
+    <div id="result"></div>
   </div>
 
   <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 </html>
-
-
