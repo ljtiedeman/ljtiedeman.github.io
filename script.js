@@ -177,7 +177,7 @@ shareBtn.addEventListener("click", async () => {
   // Branding with emoji and font to match game style
   ctx.fillStyle = "#000";
   ctx.font = "bold 20px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-  ctx.fillText("🎨 HueGuesser", padding, 30);
+  ctx.fillText("🎨 HueGuessr", padding, 30);
 
   // Target color swatch and label
   ctx.fillStyle = targetBox.style.backgroundColor;
