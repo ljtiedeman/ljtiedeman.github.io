@@ -2,45 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HueGuesser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
+  <title>HueGuesser</title>
 </head>
 <body>
   <div class="container">
-    <h1>🎨 HueGuesser</h1>
-    <div class="instructions-box">
-      <h2>How to Play</h2>
+    <h1>HueGuesser 🎨</h1>
+    <div class="instructions">
       <ul>
-        <li>You have <strong>5 attempts</strong> to match the target color.</li>
-        <li>For each attempt, choose one shade (1–10) of <strong>Red, Green, and Blue</strong>.</li>
-        <li>After each guess, you'll see the resulting color and your RGB choices.</li>
-        <li>Correct selections will lock in and show a ✅ check mark.</li>
-        <li>The goal is to match the exact RGB combination. Good luck!</li>
+        <li>Pick the intensity of Red, Green, and Blue from 1 (lowest) to 10 (highest) to match the target color.</li>
+        <li>You have 5 chances to match the target color on top.</li>
+        <li>Click a box to select it. You’ll see a check mark ✅ if it’s correct.</li>
+        <li>Your guesses and results will appear underneath.</li>
+        <li>Good luck!</li>
       </ul>
     </div>
 
-    <div id="target-color"></div>
+    <div class="section">
+      <h3>Target Color</h3>
+      <div id="target-color" class="target-box"></div>
+    </div>
 
-    <h3>Select Red</h3>
-    <div id="red-container" class="color-row"></div>
+    <div class="section">
+      <h3>Choose Red</h3>
+      <div id="red-container" class="color-container"></div>
+    </div>
 
-    <h3>Select Green</h3>
-    <div id="green-container" class="color-row"></div>
+    <div class="section">
+      <h3>Choose Green</h3>
+      <div id="green-container" class="color-container"></div>
+    </div>
 
-    <h3>Select Blue</h3>
-    <div id="blue-container" class="color-row"></div>
+    <div class="section">
+      <h3>Choose Blue</h3>
+      <div id="blue-container" class="color-container"></div>
+    </div>
 
     <button id="submit-btn" disabled>Submit Guess</button>
 
-    <h3>Previous Guesses</h3>
-    <div id="guesses" class="guess-history"></div>
-
+    <div id="guesses" class="guesses-list"></div>
     <div id="result"></div>
+    <div id="play-again"></div>
+    <canvas id="confetti"></canvas>
   </div>
-
-  <canvas id="confetti"></canvas>
-
   <script src="script.js"></script>
 </body>
 </html>
+
