@@ -229,7 +229,7 @@ shareBtn.addEventListener("click", async () => {
   // Play link in blue
   ctx.fillStyle = "#007bff";
   ctx.font = "14px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-  ctx.fillText("Play on hueguesser.com", padding, height - 30);
+  ctx.fillText("Play on hueguessr.com", padding, height - 30);
 
   // Copy canvas image to clipboard as PNG blob
   shareCanvas.toBlob(async (blob) => {
