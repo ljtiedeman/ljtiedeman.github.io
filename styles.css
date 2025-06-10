@@ -1,45 +1,40 @@
 body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
   margin: 0;
-  padding: 0;
-  font-family: 'Trebuchet MS', sans-serif;
-  background-color: #f2f3f7;
+  padding: 20px;
   text-align: center;
-  color: #333;
+  position: relative; /* Added for future flexibility */
 }
 
 .container {
-  max-width: 700px;
-  margin: auto;
+  background-color: #ffffff;
   padding: 20px;
+  border-radius: 10px;
+  display: inline-block;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
 }
 
-h1 {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
-  color: #ff4f87;
-}
-
-.instructions-box {
-  background-color: #e6f0ff;
-  border-left: 6px solid #3399ff;
-  padding: 10px 20px;
+.instructions {
+  background-color: #fffbe6;
+  padding: 10px;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
   margin-bottom: 20px;
   text-align: left;
-  border-radius: 8px;
 }
 
-#target-color {
-  width: 200px;
-  height: 100px;
-  margin: 10px auto 30px;
-  border: 3px solid black;
+.section {
+  margin-bottom: 20px;
 }
 
-.color-row {
+.color-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
 }
 
 .color-box {
@@ -47,74 +42,122 @@ h1 {
   height: 30px;
   position: relative;
   cursor: pointer;
-  border: 1px solid #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.color-box span {
-  font-size: 10px;
-  color: white;
-  position: absolute;
-  bottom: 2px;
+  border: 1px solid transparent;
+  transition: border 0.2s ease, box-shadow 0.2s ease; /* Smooth border transitions */
 }
 
 .color-box.selected {
-  outline: 2px solid black;
+  border: 2px solid #000;
+}
+
+.color-box.correct {
+  border: 2px solid #4CAF50; /* Brighter green border */
+  box-shadow: 0 0 5px #4CAF50;
+}
+
+.box-label {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
 }
 
 .color-box.correct::after {
   content: "✅";
-  font-size: 12px;
-  color: white;
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
 }
 
-#submit-btn {
+#submit-btn, .play-again-btn {
+  margin-top: 20px;
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #3399ff;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-left: 10px; /* spacing between buttons */
 }
 
 #submit-btn:disabled {
-  background-color: #ccc;
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.guess-history {
-  text-align: left;
-  padding: 0 10px;
+#submit-btn:hover:not(:disabled),
+.play-again-btn:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+}
+
+#submit-btn:focus:not(:disabled),
+.play-again-btn:focus {
+  outline: 2px solid #2e7d32; /* Clear focus ring */
+  outline-offset: 2px;
+}
+
+#target-color {
+  width: 100px;
+  height: 50px;
+  margin: 10px auto;
+  border: 2px solid #000;
 }
 
 .guess-box {
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+  margin: 10px 0;
+  text-align: left;
+  justify-content: flex-start;
 }
 
 .guess-color {
-  width: 30px;
-  height: 30px;
-  border: 2px solid black;
-}
-
-#result {
-  margin-top: 20px;
-  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #000;
+  flex-shrink: 0;
 }
 
 canvas#confetti {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
-  z-index: 999;
+  z-index: 1;
 }
+
+#result {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* space between text and buttons */
+  flex-wrap: wrap;
+}
+
+/* Mobile responsiveness (optional) */
+@media (max-width: 480px) {
+  .color-box {
+    width: 24px;
+    height: 24px;
+  }
+
+  .box-label {
+    font-size: 8px;
+  }
+
+  #submit-btn, .play-again-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
